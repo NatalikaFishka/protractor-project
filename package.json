@@ -1,0 +1,29 @@
+{
+  "name": "protractor_project",
+  "version": "1.0.0",
+  "description": "Automation test of delta.com with protractor",
+  "main": "index.js",
+  "scripts": {
+    "test": "protractor config.js",
+    "webdriver": "webdriver-manager update && webdriver-manager start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NatalikaFishka/protractor-project.git"
+  },
+  "keywords": [
+    "webdriver",
+    "automation",
+    "protractor"
+  ],
+  "author": "Nataliya Okuneva",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NatalikaFishka/protractor-project/issues"
+  },
+  "homepage": "https://github.com/NatalikaFishka/protractor-project#readme",
+  "devDependencies": {
+    "jasmine-spec-reporter": "^5.0.1",
+    "protractor": "^5.4.4"
+  }
+}
