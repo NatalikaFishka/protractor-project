@@ -13,7 +13,11 @@ describe('Test of delta.com with Protractor', () => {
       })
   });
 
-  it('Site should have a title', () => {
+  afterEach(() => {
+    browser.driver.manage().deleteAllCookies();
+  });
+
+  it('Site should have correct title', () => {
     expect(browser.getTitle()).toEqual('Airline Tickets & Flights: Book Direct with Delta Air Lines - Official Site');
   });
 
@@ -56,5 +60,22 @@ describe('Test of delta.com with Protractor', () => {
       .then(() => element(by.partialLinkText('Россия')).click());
     browser.wait(EC.urlIs('https://ru.delta.com/eu/ru'), 5000)
       .then((result) => expect(result).toBeTruthy());
+  });
+
+  it('Go to Facebook and switch back', () => {
+    browser.executeScript("document.querySelector('#footer-facebook').scrollIntoView()");
+    element(by.id('footer-facebook')).click()
+      .then(() => browser.wait(EC.visibilityOf(element(by.partialLinkText('YES,')))))
+      .then(() => element(by.partialLinkText('YES,')).click())
+      .then(() => browser.sleep(5000))
+      .then(() => browser.getAllWindowHandles())
+      .then((hendlers) => browser.switchTo().window(hendlers[1]))
+      .then(() => browser.waitForAngularEnabled(false))
+      .then(() => browser.getCurrentUrl())
+      .then((result) => expect(result).toEqual('https://www.facebook.com/delta'))
+      .then(() => browser.getAllWindowHandles())
+      .then((hendlers) => browser.switchTo().window(hendlers[0]))
+      .then(() => browser.getCurrentUrl())
+      .then((result) => expect(result).toEqual('https://www.delta.com/'))
   });
 });
