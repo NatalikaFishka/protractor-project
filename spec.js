@@ -4,16 +4,24 @@ describe('Test of delta.com with Protractor', () => {
   beforeEach(() => {
     browser.get('https://www.delta.com/');
     browser.manage().window().maximize();
-    browser.waitForAngular();
-    element.all(by.id('fsrFocusFirst'))
+    browser.waitForAngular()
+      .then(() => element.all(by.id('fsrFocusFirst')))
       .then((items) => {
         if (items.length) {
           element(by.id('fsrFocusFirst')).click();
         }
       })
+      .then(() => element.all(by.css('button.cookie-close-icon')))
+      .then((items) => {
+        if (items.length) {
+          element(by.css('button.cookie-close-icon')).click();
+        }
+      })
   });
 
   afterEach(() => {
+    browser.executeScript('window.localStorage.clear();');
+    browser.executeScript('window.sessionStorage.clear();');
     browser.driver.manage().deleteAllCookies();
   });
 
@@ -39,7 +47,6 @@ describe('Test of delta.com with Protractor', () => {
         return options[optionToPick].getText();
       })
       .then((expectedText) => expect(element(by.id('passengers-val')).getText()).toEqual(expectedText))
-    browser.sleep(2000)
   });
 
   it('Should scroll down and click on "Can I cancel..." card', () => {
@@ -49,36 +56,42 @@ describe('Test of delta.com with Protractor', () => {
   });
 
   it('Search for cotonovirus info from popular topic', () => {
-    element.all(by.linkText("Search")).first().click().then(() => element(by.linkText('Coronavirus')).click());
-    browser.sleep(2000);
-    element(by.css('.h1')).getText()
-      .then((text) => expect(text.startsWith('Coronavirus')).toBeTruthy());
+    element.all(by.linkText("Search")).first().click()
+      .then(() => element(by.linkText('Coronavirus')).click())
+      .then(() => browser.waitForAngularEnabled(false))
+      .then(() => browser.wait(EC.visibilityOf(element(by.css('.h1'))), 5000))
+      .then(() => element(by.css('.h1')).getText())
+      .then((text) => expect(text.startsWith('Coronavirus')).toBeTruthy())
   });
 
   it('Should fail to login with invalid credentials and see error message', () => {
-    element(by.css('.login-btn')).click();
-    browser.sleep(2000);
-    element(by.id('userId')).sendKeys('987465287');
-    element(by.id('password')).sendKeys('MyBestPassword');
-    element(by.css('.loginButton')).click();
-    browser.wait(EC.visibilityOf(element(by.css('.overlayText'))), 5000)
+    element(by.css('.login-btn')).click()
+      .then(() => browser.wait(EC.visibilityOf(element(by.id('userId'))), 5000))
+      .then(() => {
+        element(by.id('userId')).sendKeys('987465287');
+        element(by.id('password')).sendKeys('MyBestPassword');
+      })
+      .then(() => element(by.css('.loginButton')).click())
+      .then(() => browser.wait(EC.visibilityOf(element(by.css('.overlayText'))), 5000))
       .then(() => element(by.css('.overlayText')).getText())
       .then((errorText) => expect(errorText.startsWith("Oops!")).toBeTruthy());
   });
 
   it('Switch to Russian and confirm it', () => {
-    browser.executeScript("document.querySelector('#footer-language-selector').scrollIntoView()");
-    element(by.id('footer-language-selector')).click();
-    element(by.id('search_input')).sendKeys('Россия')
-      .then(() => element(by.partialLinkText('Россия')).click());
-    browser.wait(EC.urlIs('https://ru.delta.com/eu/ru'), 5000)
+    browser.executeScript("document.querySelector('#footer-language-selector').scrollIntoView()")
+    browser.wait(() => element(by.id('footer-language-selector')).isDisplayed(), 5000)
+      .then(() => element(by.id('footer-language-selector')).click())
+      .then(() => browser.wait(EC.visibilityOf(element(by.id('search_input')))))
+      .then(() => element(by.id('search_input')).sendKeys('Россия'))
+      .then(() => element(by.partialLinkText('Россия')).click())
+      .then(() => browser.wait(EC.urlIs('https://ru.delta.com/eu/ru'), 5000))
       .then((result) => expect(result).toBeTruthy());
   });
 
   it('Go to Facebook and switch back', () => {
-    browser.executeScript("document.querySelector('#footer-facebook').scrollIntoView()");
-    element(by.id('footer-facebook')).click()
-      .then(() => browser.wait(EC.visibilityOf(element(by.partialLinkText('YES,')))))
+    browser.executeScript("document.querySelector('#footer-facebook').scrollIntoView()")
+      .then(() => element(by.id('footer-facebook')).click())
+      .then(() => browser.wait(EC.visibilityOf(element(by.partialLinkText('YES,')))), 5000)
       .then(() => element(by.partialLinkText('YES,')).click())
       .then(() => browser.sleep(5000))
       .then(() => browser.getAllWindowHandles())
