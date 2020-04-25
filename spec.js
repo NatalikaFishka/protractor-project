@@ -29,6 +29,19 @@ describe('Test of delta.com with Protractor', () => {
     });
   });
 
+  it('Select passengers option from drop-down', () => {
+    element(by.id('passengers-val')).click()
+      .then(() => browser.wait(element(by.id('passengers-desc')).isDisplayed()))
+      .then(() => element.all(by.css('#passengers-desc .select-ui-optionList')))
+      .then((options) => {
+        let optionToPick = Math.floor(Math.random() * Math.floor(options.length));
+        options[optionToPick].click();
+        return options[optionToPick].getText();
+      })
+      .then((expectedText) => expect(element(by.id('passengers-val')).getText()).toEqual(expectedText))
+    browser.sleep(2000)
+  });
+
   it('Should scroll down and click on "Can I cancel..." card', () => {
     browser.executeScript("document.querySelector('.section.cardcd').scrollIntoView()");
     element.all(by.css('.componentLink')).first().click()
