@@ -30,8 +30,7 @@ describe('Test of delta.com with Protractor', () => {
   });
 
   it('Should search for Moscow airport and see SVO displayed as selected', () => {
-    let fromAirport = element(by.id('fromAirportName'));
-    fromAirport.click().then(() => {
+    element(by.id('fromAirportName')).click().then(() => {
       element(by.id('search_input')).sendKeys('Moscow').sendKeys(protractor.Key.ENTER)
         .then(() => expect(element(by.css('#fromAirportName .airport-code')).getText()).toEqual('SVO'));
     });
@@ -59,8 +58,8 @@ describe('Test of delta.com with Protractor', () => {
     element.all(by.linkText("Search")).first().click()
       .then(() => element(by.linkText('Coronavirus')).click())
       .then(() => browser.waitForAngularEnabled(false))
-      .then(() => browser.wait(EC.visibilityOf(element(by.css('.h1'))), 5000))
-      .then(() => element(by.css('.h1')).getText())
+      .then(() => browser.wait(EC.visibilityOf(element.all(by.css('.h1')).first()), 5000))
+      .then(() => element.all(by.css('.h1')).first().getText())
       .then((text) => expect(text.startsWith('Coronavirus')).toBeTruthy())
   });
 
