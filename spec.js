@@ -93,7 +93,7 @@ describe('Test of delta.com with Protractor', () => {
       .then(() => element(by.id('footer-facebook')).click())
       .then(() => browser.wait(EC.visibilityOf(element(by.partialLinkText('YES,')))), 5000)
       .then(() => element(by.partialLinkText('YES,')).click())
-      .then(() => browser.sleep(5000))
+      .then(() => browser.wait(() => browser.getAllWindowHandles().then((res) => res.length === 2), 5000))
       .then(() => browser.getAllWindowHandles())
       .then((hendlers) => browser.switchTo().window(hendlers[1]))
       .then(() => browser.waitForAngularEnabled(false))
